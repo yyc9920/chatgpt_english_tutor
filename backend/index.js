@@ -2,6 +2,9 @@ import { Configuration, OpenAIApi } from "openai";
 import express from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const app = express();
 const port = 8000;
@@ -9,8 +12,8 @@ app.use(bodyParser.json());
 app.use(cors());
 
 const configuration = new Configuration({
-  organization: "org-b9AdcCuV7mlA7XISeEPJSn0M",
-  apiKey: "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",
+  organization: process.env.CHATGPT_ORG,
+  apiKey: process.env.CHATGPT_APIKEY,
 });
 const openai = new OpenAIApi(configuration);
 

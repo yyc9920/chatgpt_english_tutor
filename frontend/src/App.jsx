@@ -12,12 +12,12 @@ recognition.lang = "en-US";
 
 function App() {
   const [message, setMessage] = useState("");
-  const [voice, setVoice] = useState("");
+  const [voiceNum, setVoice] = useState("");
   const [chats, setChats] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
   const synth = speechSynthesis;
+  let utterance;
   let voices = synth.getVoices();
-  console.log(voices);
 
   recognition.onresult = (event) => {
     const interimTranscripts = [];
@@ -46,7 +46,7 @@ function App() {
   };
 
   const handleVoiceChange = (event) => {
-    setAge(event.target.value);
+    setVoice(event.target.value);
   };
 
   const startListening = async () => {
@@ -83,9 +83,9 @@ function App() {
       .then((data) => {
         msgs.push(data.output);
         setChats(msgs);
-        const utterance = new SpeechSynthesisUtterance(msgs[1].content);
+        utterance = new SpeechSynthesisUtterance(msgs[msgs.length - 1].content);
         utterance.lang = "en";
-        utterance.voice = voices[144];
+        utterance.voice = voices[voiceNum];
         synth.speak(utterance);
         setIsTyping(false);
         scrollTo(0, 1e10);
@@ -104,17 +104,18 @@ function App() {
         <Select
           labelId="demo-simple-select-autowidth-label"
           id="demo-simple-select-autowidth"
-          value={voice}
+          value={voiceNum}
           onChange={handleVoiceChange}
           autoWidth
           label="Voice"
         >
-          <MenuItem value="">
-            <em>None</em>
-          </MenuItem>
-          <MenuItem value={10}>Twenty</MenuItem>
-          <MenuItem value={21}>Twenty one</MenuItem>
-          <MenuItem value={22}>Twenty one and a half</MenuItem>
+          {
+            voices.map((v, i) => {
+              return (
+                <MenuItem value={i}>{voices[i].name}</MenuItem>
+              )
+            })
+          }
         </Select>
       </FormControl>
 
