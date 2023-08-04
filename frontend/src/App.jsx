@@ -1,9 +1,10 @@
 import { useState } from "react";
 import "./App.css";
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+import FormControl from "@mui/material/FormControl";
+import Select from "@mui/material/Select";
+import Button from "@mui/joy/Button";
 
 const recognition = new webkitSpeechRecognition();
 recognition.continuous = true;
@@ -29,7 +30,7 @@ function App() {
       const transcript = event.results[i][0].transcript;
       if (event.results[i].isFinal) {
         finalTranscripts.push(transcript);
-    setMessage(`${finalTranscripts.join(" ")}`);
+        setMessage(`${finalTranscripts.join(" ")}`);
       } else {
         interimTranscripts.push(transcript);
         setMessage(`${interimTranscripts.join(" ")}`);
@@ -53,18 +54,18 @@ function App() {
 
   const startListening = async () => {
     recognition.start();
-  }
+  };
 
   const stopListening = async () => {
     recognition.stop();
-  }
+  };
 
   const speakAI = async () => {
     utterance = new SpeechSynthesisUtterance(chats[chats.length - 1].content);
     utterance.lang = "en";
     utterance.voice = voices[voiceNum];
     synth.speak(utterance);
-  }
+  };
 
   const chat = async (e, message) => {
     e.preventDefault();
@@ -104,27 +105,29 @@ function App() {
 
   return (
     <main>
-      <h1>Chat GPT English Tutor</h1>
+      <h1>🤖 Chat GPT English Tutor 🤖</h1>
 
-      <FormControl sx={{ m: 1, minWidth: 80 }}>
-        <InputLabel id="demo-simple-select-autowidth-label">Voice</InputLabel>
-        <Select
-          labelId="demo-simple-select-autowidth-label"
-          id="demo-simple-select-autowidth"
-          value={voiceNum}
-          onChange={handleVoiceChange}
-          autoWidth
-          label="Voice"
-        >
-          {
-            voices.map((v, i) => {
+      <div id="center">
+        <FormControl sx={{ m: 1, minWidth: 80 }}>
+          <InputLabel id="demo-simple-select-autowidth-label">Voice</InputLabel>
+          <Select
+            labelId="demo-simple-select-autowidth-label"
+            id="demo-simple-select-autowidth"
+            value={voiceNum}
+            onChange={handleVoiceChange}
+            autoWidth
+            label="Voice"
+          >
+            {voices.map((v, i) => {
               return (
-                <MenuItem value={i}>{voices[i].name} - {voices[i].lang}</MenuItem>
-              )
-            })
-          }
-        </Select>
-      </FormControl>
+                <MenuItem value={i}>
+                  {voices[i].name} - {voices[i].lang}
+                </MenuItem>
+              );
+            })}
+          </Select>
+        </FormControl>
+      </div>
 
       <section>
         {chats && chats.length
@@ -155,9 +158,11 @@ function App() {
           onChange={(e) => setMessage(e.target.value)}
         />
       </form>
-      <button onClick={startListening}>Start Listening</button>
-      <button onClick={stopListening}>Stop Listening</button>
-      <button onClick={speakAI}>AI Speak</button>
+      <div id="center">
+        <Button onClick={startListening}>Start Listening</Button>
+        <Button onClick={stopListening}>Stop Listening</Button>
+        <Button onClick={speakAI}>AI Speak</Button>
+      </div>
     </main>
   );
 }
