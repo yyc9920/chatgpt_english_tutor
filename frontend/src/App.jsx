@@ -10,14 +10,16 @@ recognition.continuous = true;
 recognition.interimResults = true;
 recognition.lang = "en-US";
 
+const synth = window.speechSynthesis;
+synth.cancel();
+const voices = synth.getVoices();
+
 function App() {
   const [message, setMessage] = useState("");
   const [voiceNum, setVoice] = useState("");
   const [chats, setChats] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
-  const synth = speechSynthesis;
   let utterance;
-  let voices = synth.getVoices();
 
   recognition.onresult = (event) => {
     const interimTranscripts = [];
@@ -57,6 +59,13 @@ function App() {
     recognition.stop();
   }
 
+  const speakAI = async () => {
+    utterance = new SpeechSynthesisUtterance(chats[chats.length - 1].content);
+    utterance.lang = "en";
+    utterance.voice = voices[voiceNum];
+    synth.speak(utterance);
+  }
+
   const chat = async (e, message) => {
     e.preventDefault();
 
@@ -67,10 +76,11 @@ function App() {
     let msgs = chats;
     msgs.push({ role: "user", content: message });
     setChats(msgs);
+    speakAI();
 
     setMessage("");
 
-    fetch("http://localhost:8000/", {
+    fetch("http://192.168.0.22:8000/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -83,10 +93,7 @@ function App() {
       .then((data) => {
         msgs.push(data.output);
         setChats(msgs);
-        utterance = new SpeechSynthesisUtterance(msgs[msgs.length - 1].content);
-        utterance.lang = "en";
-        utterance.voice = voices[voiceNum];
-        synth.speak(utterance);
+        speakAI();
         setIsTyping(false);
         scrollTo(0, 1e10);
       })
@@ -112,7 +119,7 @@ function App() {
           {
             voices.map((v, i) => {
               return (
-                <MenuItem value={i}>{voices[i].name}</MenuItem>
+                <MenuItem value={i}>{voices[i].name} - {voices[i].lang}</MenuItem>
               )
             })
           }
@@ -150,6 +157,7 @@ function App() {
       </form>
       <button onClick={startListening}>Start Listening</button>
       <button onClick={stopListening}>Stop Listening</button>
+      <button onClick={speakAI}>AI Speak</button>
     </main>
   );
 }
